@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2P Local Bridge - Configuración y Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(23, 32, 54, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(30, 41, 69, 0.9);
+      --primary: #38bdf8;
+      --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-mp: #009ee3;
+      --accent-paypal: #0079c1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.12) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      background: rgba(11, 15, 25, 0.85);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 0.9rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 9999px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    .btn-donate-header {
+      background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+      transition: all 0.2s;
+      animation: heartbeat 2.5s infinite;
+    }
+
+    .btn-donate-header:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    main {
+      flex: 1;
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Setup Banner Screen */
+    #setupScreen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 65vh;
+    }
+
+    .setup-box {
+      background: var(--card-bg);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 540px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(16px);
+      text-align: center;
+    }
+
+    .setup-box h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      background: linear-gradient(135deg, #fff 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .setup-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.8rem;
+      line-height: 1.5;
+    }
+
+    .setup-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      text-align: left;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .setup-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .setup-input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+    }
+
+    .btn-launch {
+      width: 100%;
+      background: var(--primary-gradient);
+      color: #fff;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-launch:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(56, 189, 248, 0.6);
+    }
+
+    /* Dashboard Layout */
+    #dashboardScreen {
+      display: none;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 960px) {
+      .grid-top {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge-icon {
+      font-size: 1.2rem;
+    }
+
+    /* Primary Bridge Box */
+    .bridge-hero {
+      background: linear-gradient(145deg, rgba(30, 41, 69, 0.7), rgba(15, 23, 42, 0.8));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bridge-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .url-display-box {
+      background: rgba(11, 15, 25, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .url-text {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #38bdf8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .url-text:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.1rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .bridge-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-top: 1.2rem;
+    }
+
+    .stat-chip {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.75rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* QR Grid */
+    .qr-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 600px) {
+      .qr-panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .qr-card {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .qr-card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .qr-card p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    /* QR Clickable Zoom */
+    .qr-img-wrapper {
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      margin-bottom: 0.6rem;
+      width: 170px;
+      height: 170px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .qr-img-wrapper:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.4);
+    }
+
+    .qr-zoom-hint {
+      font-size: 0.7rem;
+      color: #38bdf8;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      cursor: pointer;
+    }
+
+    .qr-img-wrapper img {
+      width: 150px;
+      height: 150px;
+      display: block;
+    }
+
+    .qr-info-box {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      width: 100%;
+      word-break: break-all;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    /* Interfaces Switcher */
+    .ips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+
+    .ip-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0.9rem;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+
+    .ip-name {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .ip-addr {
+      font-family: var(--font-mono);
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    /* Live Traffic Table */
+    .logs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .badge-count {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+    }
+
+    .traffic-table-container {
+      max-height: 280px;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    thead th {
+      background: rgba(15, 23, 42, 0.95);
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    td {
+      padding: 0.65rem 1rem;
+      color: #e2e8f0;
+    }
+
+    .method-tag {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+    }
+
+    .method-GET { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .method-POST { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .method-PUT { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .method-DELETE { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    /* WiFi Config Section */
+    .wifi-edit-box {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .input-field {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.82rem;
+      color: #fff;
+      font-family: var(--font-sans);
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    /* Modal Donaciones */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      transform: scale(0.92);
+      transition: all 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-close {
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: background 0.2s;
+    }
+
+    .btn-close:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .donation-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .donation-card {
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .donation-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .donation-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .badge-ars {
+      background: rgba(0, 158, 227, 0.15);
+      color: #009ee3;
+      border: 1px solid rgba(0, 158, 227, 0.3);
+    }
+
+    .badge-usd {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-paypal {
+      background: rgba(0, 121, 193, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(0, 121, 193, 0.3);
+    }
+
+    .donation-data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+
+    .donation-copy-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .donation-copy-btn:hover {
+      background: rgba(56, 189, 248, 0.3);
+    }
+
+    .donation-btn-direct {
+      background: linear-gradient(135deg, #009ee3 0%, #0070ba 100%);
+      color: #fff;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      display: block;
+      box-shadow: 0 4px 15px rgba(0, 158, 227, 0.3);
+    }
+
+    .donation-btn-paypal {
+      background: linear-gradient(135deg, #0079c1 0%, #00457c 100%);
+      box-shadow: 0 4px 15px rgba(0, 121, 193, 0.3);
+    }
+
+    /* Modal QR Gigante / Zoom */
+    .qr-zoom-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+      padding: 1.5rem;
+    }
+
+    .qr-zoom-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .qr-zoom-content {
+      background: #111827;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 28px;
+      padding: 2.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    .qr-zoom-frame {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      margin: 1.2rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 320px;
+      height: 320px;
+    }
+
+    .qr-zoom-frame img {
+      width: 288px;
+      height: 288px;
+      display: block;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1e293b;
+      color: #fff;
+      padding: 0.8rem 1.4rem;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      border-top: 1px solid var(--card-border);
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="logo-badge">⚡</div>
+      <div class="brand-text">
+        <h1>P2P Local Bridge</h1>
+        <p>Intranet Deployment & Testing Hub</p>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn-donate-header" onclick="openDonationModal()">
+        ☕ Donar al Creador
+      </button>
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span id="bridgeStatus">ESPERANDO PUERTO</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Pantalla 1: Formulario Web Inicial para pedir el Puerto -->
+    <section id="setupScreen">
+      <div class="setup-box">
+        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🚀</div>
+        <h2>Configurar Puente Local</h2>
+        <p>Ingresa el puerto donde está corriendo tu aplicación web (React, Vite, Angular, Spring Boot, etc.) para compartirlo a la red.</p>
+        
+        <form class="setup-form" onsubmit="handleStartBridge(event)">
+          <div>
+            <label class="form-label" for="inputTargetPort">
+              <span>🔌 Puerto de tu proyecto local</span>
+            </label>
+            <input type="number" id="inputTargetPort" class="setup-input" placeholder="ej. 3000, 5173, 8080..." required autofocus>
+          </div>
+
+          <div>
+            <label class="form-label" for="inputWifiSSID">
+              <span>📶 Nombre Wi-Fi (SSID para generar QR)</span>
+            </label>
+            <input type="text" id="inputWifiSSID" class="setup-input" placeholder="Nombre de tu red (opcional)">
+          </div>
+
+          <div>
+            <label class="form-label" for="inputWifiPass">
+              <span>🔑 Contraseña Wi-Fi</span>
+            </label>
+            <input type="password" id="inputWifiPass" class="setup-input" placeholder="Clave de tu red (opcional)">
+          </div>
+
+          <button type="submit" class="btn-launch" id="btnLaunch">
+            <span>✨ Desplegar Puente Local</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Pantalla 2: Panel de Control Completo -->
+    <div id="dashboardScreen">
+      <div class="grid-top">
+        
+        <!-- Primary Bridge Info -->
+        <section class="card bridge-hero">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="badge-icon">🌐</span>
+              <span>Acceso al Proyecto en Vivo</span>
+            </div>
+            <span style="font-size: 0.8rem; color: #38bdf8; font-weight: 600;">EN LÍNEA</span>
+          </div>
+
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+            Cualquier celular, tablet o laptop conectado a tu red Wi-Fi o Intranet puede abrir tu proyecto usando este enlace:
+          </p>
+
+          <div class="url-display-box">
+            <a href="#" target="_blank" id="mainBridgeUrl" class="url-text">Cargando...</a>
+            <button class="btn btn-secondary" onclick="copyBridgeUrl()">📋 Copiar</button>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem; margin-top: 0.8rem; flex-wrap: wrap;">
+            <a href="#" target="_blank" id="btnOpenProject" class="btn btn-primary">🚀 Abrir Proyecto</a>
+            <button class="btn btn-secondary" onclick="reconfigureBridge()">⚙️ Cambiar Puerto</button>
+            <button class="btn btn-secondary" style="border-color: rgba(236, 72, 153, 0.4); color: #f43f5e;" onclick="openDonationModal()">❤️ Apoyar Proyecto</button>
+          </div>
+
+          <div class="bridge-stats-row">
+            <div class="stat-chip">
+              <div class="stat-label">Destino Local</div>
+              <div class="stat-val" id="statTarget">localhost:----</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-label">Puerto Puente</div>
+              <div class="stat-val" id="statBridgePort">----</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-label">Peticiones Totales</div>
+              <div class="stat-val" id="statRequests">0</div>
+            </div>
+          </div>
+
+          <!-- Interfaces Disponibles -->
+          <div style="margin-top: 1.5rem;">
+            <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.6rem;">Interfaces de Red Detectadas:</h4>
+            <div class="ips-list" id="ipsListContainer">
+              <!-- Dynamic IP list -->
+            </div>
+          </div>
+        </section>
+
+        <!-- QRs Section -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="badge-icon">📲</span>
+              <span>Conexión Instantánea con QR</span>
+            </div>
+          </div>
+
+          <div class="qr-panels">
+            <!-- Web App QR -->
+            <div class="qr-card">
+              <h4>Proyecto Web</h4>
+              <p>Escanea para abrir tu web</p>
+              <div class="qr-img-wrapper" onclick="zoomQR('project')" title="Haz clic para ver en pantalla grande">
+                <img id="qrProjectImg" src="" alt="QR Proyecto">
+              </div>
+              <span class="qr-zoom-hint" onclick="zoomQR('project')">🔍 Clic para agrandar</span>
+              <div class="qr-info-box" id="qrProjectInfo">
+                <span>Cargando URL...</span>
+              </div>
+            </div>
+
+            <!-- WiFi QR -->
+            <div class="qr-card">
+              <h4>Conexión Wi-Fi</h4>
+              <p>Conéctate a la red con un toque</p>
+              <div class="qr-img-wrapper" onclick="zoomQR('wifi')" title="Haz clic para ver en pantalla grande">
+                <img id="qrWifiImg" src="" alt="QR WiFi">
+              </div>
+              <span class="qr-zoom-hint" onclick="zoomQR('wifi')">🔍 Clic para agrandar</span>
+              <div class="qr-info-box" id="qrWifiInfo">
+                <span>Cargando Wi-Fi...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customizar WiFi si el usuario lo desea -->
+          <div class="wifi-edit-box">
+            <p style="font-size: 0.75rem; color: var(--text-muted);">
+              ¿Deseas personalizar o cambiar el nombre/clave de la red para el QR de Wi-Fi?
+            </p>
+            <div class="input-group">
+              <input type="text" id="wifiSsidInput" class="input-field" placeholder="Nombre Wi-Fi (SSID)">
+              <input type="text" id="wifiPassInput" class="input-field" placeholder="Contraseña">
+              <button class="btn btn-secondary" onclick="updateWifiQR()">Generar</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Live Traffic & Device Monitor -->
+      <section class="card">
+        <div class="logs-header">
+          <div class="card-title">
+            <span class="badge-icon">📊</span>
+            <span>Monitor de Tráfico y Dispositivos en Tiempo Real</span>
+          </div>
+          <div style="display: flex; gap: 0.6rem; align-items: center;">
+            <span class="badge-count" id="trafficCount">0 peticiones</span>
+            <button class="btn btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.78rem;" onclick="clearTrafficLogs()">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="traffic-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>IP Cliente</th>
+                <th>Método</th>
+                <th>Ruta Solicitada</th>
+                <th>Dispositivo / Agente</th>
+              </tr>
+            </thead>
+            <tbody id="trafficTableBody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                  Esperando las primeras conexiones desde tu red local...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Modal QR Gigante / Zoom -->
+  <div id="qrZoomModal" class="qr-zoom-modal" onclick="handleZoomModalClick(event)">
+    <div class="qr-zoom-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h3 id="zoomTitle" style="font-size: 1.25rem; font-weight: 700; color: #fff;">Escanea el Código QR</h3>
+        <button class="btn-close" onclick="closeZoomQR()">&times;</button>
+      </div>
+      
+      <p id="zoomSubtitle" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+        Muestra este código a tu audiencia o compañeros
+      </p>
+
+      <div class="qr-zoom-frame">
+        <img id="zoomImg" src="" alt="QR Pantalla Completa">
+      </div>
+
+      <div id="zoomInfo" style="font-family: var(--font-mono); font-size: 0.88rem; color: #38bdf8; word-break: break-all; margin-bottom: 1rem;">
+        <!-- Info del QR -->
+      </div>
+
+      <button class="btn btn-primary" onclick="closeZoomQR()" style="width: 100%; justify-content: center;">
+        Cerrar Vista Previa
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal de Donaciones -->
+  <div id="donationModal" class="modal-overlay" onclick="handleModalBackdropClick(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>☕ Donar al Desarrollador</h3>
+        <button class="btn-close" onclick="closeDonationModal()">&times;</button>
+      </div>
+
+      <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.25rem;">
+        Esta aplicación es 100% gratuita y de código abierto para la comunidad. Si te ha sido útil para tus clases, proyectos o presentaciones, puedes invitarle un café o realizar una donación voluntaria (desde $1 USD o $1500 ARS) para apoyar su mantenimiento y desarrollo continuo ❤️.
+      </p>
+
+      <div class="donation-grid">
+        
+        <!-- Mercado Pago ARS -->
+        <div class="donation-card">
+          <div class="donation-card-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.2rem;">🇦🇷</span>
+              <strong style="font-size: 0.95rem; color: #fff;">Mercado Pago (Pesos Argentinos)</strong>
+            </div>
+            <span class="donation-badge badge-ars">ARS</span>
+          </div>
+
+          <a href="https://mpago.la/2fAgZyS" target="_blank" class="donation-btn-direct">
+            💳 Donar por Mercado Pago (Link directo)
+          </a>
+
+          <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.4rem;">
+            <div class="donation-data-row">
+              <span style="color: var(--text-muted);">Alias:</span>
+              <span style="font-family: var(--font-mono); font-weight: 600;">ivancruz2023</span>
+              <button class="donation-copy-btn" onclick="copyText('ivancruz2023', '¡Alias ARS copiado!')">Copiar</button>
+            </div>
+            <div class="donation-data-row">
+              <span style="color: var(--text-muted);">CVU:</span>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem;">0000003100089818162601</span>
+              <button class="donation-copy-btn" onclick="copyText('0000003100089818162601', '¡CVU copiado!')">Copiar</button>
+            </div>
+            <div class="donation-data-row">
+              <span style="color: var(--text-muted);">Titular:</span>
+              <span style="font-size: 0.78rem; font-weight: 500;">Brian Iván Cruz Delgado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mercado Pago USD / BIND -->
+        <div class="donation-card">
+          <div class="donation-card-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.2rem;">💵</span>
+              <strong style="font-size: 0.95rem; color: #fff;">Mercado Pago (Dólares USD)</strong>
+            </div>
+            <span class="donation-badge badge-usd">USD</span>
+          </div>
+
+          <p style="font-size: 0.75rem; color: var(--text-muted);">
+            ℹ️ Destino: Banco Industrial (BIND)
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <div class="donation-data-row">
+              <span style="color: var(--text-muted);">Alias USD:</span>
+              <span style="font-family: var(--font-mono); font-weight: 600;">ivan.cruz.delgado</span>
+              <button class="donation-copy-btn" onclick="copyText('ivan.cruz.delgado', '¡Alias USD copiado!')">Copiar</button>
+            </div>
+            <div class="donation-data-row">
+              <span style="color: var(--text-muted);">CBU:</span>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem;">3220001888020289840016</span>
+              <button class="donation-copy-btn" onclick="copyText('3220001888020289840016', '¡CBU copiado!')">Copiar</button>
+            </div>
+            <div class="donation-data-row">
+              <span style="color: var(--text-muted);">Titular:</span>
+              <span style="font-size: 0.78rem; font-weight: 500;">Brian Iván Cruz Delgado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PayPal Internacional -->
+        <div class="donation-card">
+          <div class="donation-card-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.2rem;">🌍</span>
+              <strong style="font-size: 0.95rem; color: #fff;">PayPal (Internacional)</strong>
+            </div>
+            <span class="donation-badge badge-paypal">PayPal</span>
+          </div>
+
+          <a href="https://www.paypal.com/paypalme" target="_blank" class="donation-btn-direct donation-btn-paypal">
+            🌐 Enviar por PayPal
+          </a>
+
+          <div class="donation-data-row">
+            <span style="color: var(--text-muted);">Correo PayPal:</span>
+            <span style="font-family: var(--font-mono); font-weight: 600;">ivan4912134@gmail.com</span>
+            <button class="donation-copy-btn" onclick="copyText('ivan4912134@gmail.com', '¡Correo de PayPal copiado!')">Copiar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>P2P Local Bridge • ATLAS Developers • Desarrollado por Brian Iván Cruz Delgado</div>
+    <div>¿Te gusta la herramienta? <a href="javascript:void(0)" onclick="openDonationModal()" style="color: #f43f5e; text-decoration: none; font-weight: 600;">Haz una donación voluntaria aquí ❤️</a></div>
+  </footer>
+
+  <div id="toast" class="toast">¡Enlace copiado al portapapeles!</div>
+
+  <script>
+    let currentBridgeData = null;
+
+    async function checkCurrentStatus() {
+      try {
+        const res = await fetch('/__bridge/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        currentBridgeData = data;
+
+        if (data.configured) {
+          showDashboard(data);
+        } else {
+          showSetup(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function showSetup(data) {
+      document.getElementById('setupScreen').style.display = 'flex';
+      document.getElementById('dashboardScreen').style.display = 'none';
+      document.getElementById('bridgeStatus').textContent = 'ESPERANDO PUERTO';
+      document.getElementById('bridgeStatus').style.color = '#fbbf24';
+
+      if (data && data.wifi && data.wifi.ssid) {
+        document.getElementById('inputWifiSSID').value = data.wifi.ssid;
+      }
+    }
+
+    function showDashboard(data) {
+      document.getElementById('setupScreen').style.display = 'none';
+      document.getElementById('dashboardScreen').style.display = 'flex';
+      document.getElementById('bridgeStatus').textContent = 'PUENTE ACTIVO';
+      document.getElementById('bridgeStatus').style.color = '#34d399';
+      renderData(data);
+    }
+
+    async function handleStartBridge(e) {
+      e.preventDefault();
+      const targetPort = parseInt(document.getElementById('inputTargetPort').value.trim());
+      const wifiSSID = document.getElementById('inputWifiSSID').value.trim();
+      const wifiPass = document.getElementById('inputWifiPass').value.trim();
+
+      if (!targetPort) {
+        showToast('Por favor introduce un número de puerto válido');
+        return;
+      }
+
+      try {
+        const res = await fetch('/__bridge/configure', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetPort, wifiSSID, wifiPass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('🚀 ¡Puente desplegado con éxito!');
+          showDashboard(data);
+        }
+      } catch (err) {
+        showToast('Error al configurar puente');
+      }
+    }
+
+    function reconfigureBridge() {
+      document.getElementById('setupScreen').style.display = 'flex';
+      document.getElementById('dashboardScreen').style.display = 'none';
+    }
+
+    function renderData(data) {
+      // Main URL
+      const mainLink = document.getElementById('mainBridgeUrl');
+      mainLink.href = data.url;
+      mainLink.textContent = data.url;
+      document.getElementById('btnOpenProject').href = data.url;
+
+      // Stats
+      document.getElementById('statTarget').textContent = `localhost:${data.targetPort}`;
+      document.getElementById('statBridgePort').textContent = data.bridgePort;
+      document.getElementById('statRequests').textContent = data.totalRequests;
+
+      // QR Project
+      document.getElementById('qrProjectImg').src = data.qrProject;
+      document.getElementById('qrProjectInfo').innerHTML = `
+        <strong>Enlace:</strong>
+        <span>${data.url}</span>
+      `;
+
+      // QR Wifi
+      document.getElementById('qrWifiImg').src = data.qrWifi;
+      document.getElementById('qrWifiInfo').innerHTML = `
+        <strong>SSID:</strong> ${data.wifi.ssid || 'No configurado'}<br>
+        <strong>Clave:</strong> ${data.wifi.password ? '••••••••' : '(Red Abierta o Sin Clave)'}
+      `;
+
+      if (!document.getElementById('wifiSsidInput').value && data.wifi.ssid) {
+        document.getElementById('wifiSsidInput').value = data.wifi.ssid;
+      }
+
+      // Interfaces
+      const ipsContainer = document.getElementById('ipsListContainer');
+      ipsContainer.innerHTML = '';
+      if (data.allInterfaces && data.allInterfaces.length > 0) {
+        data.allInterfaces.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'ip-item';
+          div.innerHTML = `
+            <span class="ip-name">${item.name}</span>
+            <span class="ip-addr">http://${item.address}:${data.bridgePort}</span>
+          `;
+          ipsContainer.appendChild(div);
+        });
+      }
+
+      // Traffic
+      renderTraffic(data.recentTraffic || []);
+    }
+
+    function renderTraffic(traffic) {
+      const tbody = document.getElementById('trafficTableBody');
+      document.getElementById('trafficCount').textContent = `${traffic.length} registros`;
+
+      if (!traffic || traffic.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+              Esperando las primeras conexiones desde tu red local...
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      traffic.slice(-50).reverse().forEach(req => {
+        const tr = document.createElement('tr');
+        const time = new Date(req.time).toLocaleTimeString();
+        
+        tr.innerHTML = `
+          <td style="font-family: var(--font-mono); font-size: 0.78rem;">${time}</td>
+          <td style="font-family: var(--font-mono); color: #38bdf8;">${req.ip}</td>
+          <td><span class="method-tag method-${req.method}">${req.method}</span></td>
+          <td style="font-family: var(--font-mono); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${req.path}</td>
+          <td style="color: var(--text-muted); font-size: 0.75rem; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${req.userAgent}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Zoom QR
+    function zoomQR(tipo) {
+      const modal = document.getElementById('qrZoomModal');
+      const img = document.getElementById('zoomImg');
+      const title = document.getElementById('zoomTitle');
+      const sub = document.getElementById('zoomSubtitle');
+      const info = document.getElementById('zoomInfo');
+
+      if (tipo === 'project') {
+        img.src = currentBridgeData.qrProject;
+        title.textContent = '🚀 Acceso al Proyecto Web';
+        sub.textContent = 'Escanea este QR con cualquier teléfono para abrir el proyecto';
+        info.textContent = currentBridgeData.url;
+      } else {
+        img.src = currentBridgeData.qrWifi;
+        title.textContent = '📶 Conectar a la Red Wi-Fi';
+        sub.textContent = 'Escanea para conectar tu teléfono automáticamente a la red';
+        info.textContent = `SSID: ${currentBridgeData.wifi.ssid || 'N/A'}`;
+      }
+
+      modal.classList.add('active');
+    }
+
+    function closeZoomQR() {
+      document.getElementById('qrZoomModal').classList.remove('active');
+    }
+
+    function handleZoomModalClick(e) {
+      if (e.target.id === 'qrZoomModal') {
+        closeZoomQR();
+      }
+    }
+
+    async function updateWifiQR() {
+      const ssid = document.getElementById('wifiSsidInput').value.trim();
+      const password = document.getElementById('wifiPassInput').value.trim();
+      if (!ssid) {
+        showToast('Por favor introduce el nombre de la red Wi-Fi');
+        return;
+      }
+      try {
+        const res = await fetch('/__bridge/wifi-qr', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ssid, password })
+        });
+        const data = await res.json();
+        currentBridgeData.qrWifi = data.qrWifi;
+        currentBridgeData.wifi.ssid = ssid;
+        document.getElementById('qrWifiImg').src = data.qrWifi;
+        document.getElementById('qrWifiInfo').innerHTML = `
+          <strong>SSID:</strong> ${ssid}<br>
+          <strong>Clave:</strong> ${password ? password : '(Sin clave)'}
+        `;
+        showToast('¡Código QR de Wi-Fi actualizado!');
+      } catch (err) {
+        showToast('Error al generar QR');
+      }
+    }
+
+    async function clearTrafficLogs() {
+      try {
+        await fetch('/__bridge/clear-logs', { method: 'POST' });
+        checkCurrentStatus();
+      } catch (e) {}
+    }
+
+    function copyBridgeUrl() {
+      if (currentBridgeData && currentBridgeData.url) {
+        copyText(currentBridgeData.url, '¡Enlace copiado al portapapeles!');
+      }
+    }
+
+    function copyText(text, msg) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(msg || 'Copiado al portapapeles');
+      });
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // Modal Control
+    function openDonationModal() {
+      document.getElementById('donationModal').classList.add('active');
+    }
+
+    function closeDonationModal() {
+      document.getElementById('donationModal').classList.remove('active');
+    }
+
+    function handleModalBackdropClick(e) {
+      if (e.target.id === 'donationModal') {
+        closeDonationModal();
+      }
+    }
+
+    // Polling regular cada 2.5s para mantener el estado sincronizado
+    checkCurrentStatus();
+    setInterval(checkCurrentStatus, 2500);
+  </script>
+</body>
+</html>

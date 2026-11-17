@@ -1,3 +1,28 @@
-para empaquetar en un .exe usar:
+# Instrucciones de Compilación y Uso
 
-pkg puente.js --target node18-win-x64 --output P2P-Local-Bridge.exe
+## 1. Ejecutar en desarrollo
+```bash
+npm start
+# o
+node puente.js
+```
+
+## 2. Generar el archivo ejecutable (.exe)
+El proyecto ya incluye la configuración de empaquetado mediante `pkg`. Para compilar un nuevo `.exe`:
+
+```bash
+npm run build:exe
+```
+O directamente con el comando:
+```bash
+pkg . --target node18-win-x64 --output P2P-Local-Bridge.exe
+```
+
+## 3. Características incluidas
+- Detección inteligente de la interfaz de red local (Wi-Fi / Ethernet real).
+- Generación de código QR en terminal y en navegador para la Web.
+- Generación de código QR para conexión rápida a la red Wi-Fi (estándar móvil).
+- Panel de Control Web Integrado en: `http://<TU_IP>:4000/__bridge/admin`
+- Monitor de tráfico HTTP en tiempo real con detección de User-Agent y método.
+- Soporte para WebSockets (ideal para Vite, React, Next.js, Angular HMR).
+- Mensaje amigable de error 502 cuando el puerto local destino no está respondiendo.
